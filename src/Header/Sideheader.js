@@ -17,7 +17,7 @@ export const Sideheader = (props) => {
                         <li><Link to="/department"><i className="fa fa-home" ></i> Department</Link></li>
                         <li><Link to="/designation"><i className="fa fa-user" ></i>  Designation</Link></li>
                         <li><Link to="/users"><i className="fa fa-user" ></i> Users</Link></li>
-                        <li><a href="#"><i className="fa fa-user" ></i> Patient</a></li>
+                        <li><Link to="/projects"><i className="fa fa-user" ></i> Projects</Link></li>
                         <li><a href="#"><i className="fa fa-user" ></i> User</a></li>
 
                     </ul>

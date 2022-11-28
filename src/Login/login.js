@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Login = (props) => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const navigate = useNavigate();
+    const [errorMessage, seterrorMessage] = useState()
     const signIntoDashboard = async () => {
         var req = {
             "username": getValues("username"),
@@ -17,6 +18,8 @@ const Login = (props) => {
 
                 localStorage.setItem("user-info", JSON.stringify(response.data.user));
                 navigate('/department')
+            }else{
+                seterrorMessage(response.data.result);
             }
           } catch (error) {
             console.error(error);
@@ -52,6 +55,7 @@ const Login = (props) => {
                             {/* <span>or use your account</span> */}
                             <input type="email" {...register("username")} placeholder="Email" />
                             <input type="password" {...register("password")} placeholder="Password" />
+                            <span style={{color:"red"}}>{errorMessage}</span>
                             <a href="#">Forgot your password?</a>
                             <button onClick={()=>signIntoDashboard()}>Sign In</button>
                         </div>

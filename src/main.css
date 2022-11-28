@@ -145,3 +145,40 @@ img {
 .profiledetails.active{
     display: block;
 }
+.projectHolder{
+    padding:15px;
+    background-color: #fff;
+    box-shadow: 1px 1px 4px 1px #ccc;
+    margin-top: 10px;
+}
+.projectHolder .projectTitle{
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+.projectDesc{
+    padding-bottom: 15px;
+}
+.timeDideLine{
+    overflow: hidden;
+}
+.timeDideLine .start{
+    float: left;
+}
+.timeDideLine .end {
+    float: right;
+}
+.show{
+    display: block;
+}
+.projectHolderSingle{
+    background-color: #fff;
+    padding:15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+.taskHolder{
+    background-color: #fff;
+    padding:15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
