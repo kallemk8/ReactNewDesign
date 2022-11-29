@@ -16,6 +16,8 @@ import PrivateRoute from './PrivateRoute';
 import Users from './components/users';
 import Projects from './components/projects';
 import SingleProject from './components/singleProject';
+import TimelineResource from './components/calendar';
+import Meetings from './components/meetings';
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +27,10 @@ function App() {
           <Route path='/designation' element={<PrivateRoute><Designation /></PrivateRoute>} />
           <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />
           <Route path='/projects' element={<PrivateRoute><Projects /></PrivateRoute>} />
+
+          <Route path='/calender' element={<PrivateRoute><TimelineResource /></PrivateRoute>} />
+
+          <Route path='/meetings' element={<PrivateRoute><Meetings /></PrivateRoute>} />
           <Route path='/project/:id' element={<PrivateRoute><SingleProject /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
