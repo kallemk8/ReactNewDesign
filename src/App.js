@@ -18,6 +18,7 @@ import Projects from './components/projects';
 import SingleProject from './components/singleProject';
 import TimelineResource from './components/calendar';
 import Meetings from './components/meetings';
+import GoogleSingup from './components/googlesingup';
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +32,7 @@ function App() {
           <Route path='/calender' element={<PrivateRoute><TimelineResource /></PrivateRoute>} />
 
           <Route path='/meetings' element={<PrivateRoute><Meetings /></PrivateRoute>} />
+          <Route path='/googleSingup' element={<PrivateRoute><GoogleSingup /></PrivateRoute>} />
           <Route path='/project/:id' element={<PrivateRoute><SingleProject /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
