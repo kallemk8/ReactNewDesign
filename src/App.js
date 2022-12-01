@@ -8,6 +8,7 @@ import {
   Route,
   Routes,
   BrowserRouter,
+  
 } from "react-router-dom";
 import Login from './Login/login'
 import Department from './components/Department'
@@ -19,8 +20,17 @@ import SingleProject from './components/singleProject';
 import TimelineResource from './components/calendar';
 import Meetings from './components/meetings';
 import GoogleSingup from './components/googlesingup';
+import { LinkedInCallback } from 'react-linkedin-login-oauth2';
+
 function App() {
   return (
+
+    // <BrowserRouter>
+    //     <Routes>
+    //     <Route exact path="/linkedin" component={LinkedInCallback} />
+    //     <Route  path="/" component={GoogleSingup} />
+    //     </Routes>
+    // </BrowserRouter>
     <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
@@ -30,7 +40,8 @@ function App() {
           <Route path='/projects' element={<PrivateRoute><Projects /></PrivateRoute>} />
 
           <Route path='/calender' element={<PrivateRoute><TimelineResource /></PrivateRoute>} />
-
+          <Route exact path="/linkedin" element={<LinkedInCallback/>} />
+        
           <Route path='/meetings' element={<PrivateRoute><Meetings /></PrivateRoute>} />
           <Route path='/googleSingup' element={<PrivateRoute><GoogleSingup /></PrivateRoute>} />
           <Route path='/project/:id' element={<PrivateRoute><SingleProject /></PrivateRoute>} />
