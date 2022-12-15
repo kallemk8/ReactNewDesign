@@ -71,13 +71,8 @@ const Department = () => {
     }
     return (
         <>
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><a href="#">Home</a></li>
-                    <li className="breadcrumb-item"><a href="#">Department</a></li>
-                    <li className="breadcrumb-item active" aria-current="page">Form</li>
-                </ol>
-            </nav>
+            <div className="container">
+                
             <table className="table">
                 <thead>
                     <tr>
@@ -167,6 +162,7 @@ const Department = () => {
                     </tr>}
                 </tbody>
             </table>
+            </div>
             {/* <form>
                 <div className="form-group">
                     <label for="exampleInputEmail1">Email address</label>

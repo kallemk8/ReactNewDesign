@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-export const Sideheader = (props) => {
+export const Sideheaders = (props) => {
     return (
         <>
             {!props.view  ?

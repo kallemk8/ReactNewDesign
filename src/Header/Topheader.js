@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Dashboard from './../images/dashboard.png'
 import { useNavigate } from "react-router-dom";
-export const Topheader = (props) => {
+export const Topheaders = (props) => {
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
     const showDropDown = () => {

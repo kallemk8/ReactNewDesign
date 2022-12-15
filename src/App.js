@@ -1,8 +1,12 @@
 import logo from './logo.svg';
-import './App.css';
-import './main.css';
 import React from 'react';
-
+import './assets/css/bootstrap.min.css';
+import './assets/css/font-awesome.min.css';
+import './assets/plugins/fontawesome/css/all.min.css';
+import './assets/css/line-awesome.min.css';
+import './assets/css/material.css';
+import './assets/css/material.css';
+import './assets/css/style.css';
 import {
   BrowserRouter as Router,
   Route,
@@ -21,6 +25,9 @@ import TimelineResource from './components/calendar';
 import Meetings from './components/meetings';
 import GoogleSingup from './components/googlesingup';
 import { LinkedInCallback } from 'react-linkedin-login-oauth2';
+import ForgotPassword from './Login/ForgotPassword';
+import Register from './Login/register';
+import Dashboard from './components/Dashboard/dashboard';
 
 function App() {
   return (
@@ -34,6 +41,9 @@ function App() {
     <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
+          <Route path='/forgotPassword' element={<ForgotPassword />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path='/department' element={<PrivateRoute><Department /></PrivateRoute>} />
           <Route path='/designation' element={<PrivateRoute><Designation /></PrivateRoute>} />
           <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />

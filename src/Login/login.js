@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './login.css'
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from  './../assets/img/logo2.png'
 const Login = (props) => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const navigate = useNavigate();
@@ -27,54 +27,54 @@ const Login = (props) => {
     }
     return (
         <>
-            <div className='' style={{marginTop:"10%"}}>
-                <div className="container" id="container">
-                    <div className="form-container sign-up-container">
-                        <form action="#">
-                            <h1>Create Account</h1>
-                            {/* <div className="social-container">
-                                <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
-                                <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
-                                <a href="#" className="social"><i className="fab fa-linkedin-in"></i></a>
-                            </div> */}
-                            {/* <span>or use your email for registration</span> */}
-                            <input type="text" {...register("designation")} placeholder="Name" />
-                            <input type="email" {...register("designation")} placeholder="Email" />
-                            <input type="password" {...register("designation")} placeholder="Password" />
-                            <button>Sign Up</button>
-                        </form>
-                    </div>
-                    <div className="form-container sign-in-container">
-                        <div className='form'>
-                            <h1>Sign in</h1>
-                            {/* <div className="social-container">
-                                <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
-                                <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
-                                <a href="#" className="social"><i className="fab fa-linkedin-in"></i></a>
-                            </div> */}
-                            {/* <span>or use your account</span> */}
-                            <input type="email" {...register("username")} placeholder="Email" />
-                            <input type="password" {...register("password")} placeholder="Password" />
-                            <span style={{color:"red"}}>{errorMessage}</span>
-                            <a href="#">Forgot your password?</a>
-                            <button onClick={()=>signIntoDashboard()}>Sign In</button>
+            <div className="account-page">
+            <div className="main-wrapper">
+                <div className="account-content">
+                    <div className="container">
+
+                        <div className="account-logo">
+                            <a href="admin-dashboard.html"><img src={Logo} alt="Dreamguy's Technologies" /></a>
                         </div>
-                    </div>
-                    <div className="overlay-container">
-                        <div className="overlay">
-                            <div className="overlay-panel overlay-left">
-                                <h1>Welcome Back!</h1>
-                                <p>To keep connected with us please login with your personal info</p>
-                                <button className="ghost" id="signIn">Sign In</button>
-                            </div>
-                            <div className="overlay-panel overlay-right">
-                                <h1>Hello, Friend!</h1>
-                                <p>Enter your personal details and start journey with us</p>
-                                <button className="ghost" id="signUp">Sign Up</button>
+
+                        <div className="account-box">
+                            <div className="account-wrapper">
+                                <h3 className="account-title">Login</h3>
+                                <p className="account-subtitle">Access to our dashboard</p>
+
+                                <form onSubmit={handleSubmit(signIntoDashboard)}>
+                                    <div className="form-group">
+                                        <label>Email Address</label>
+                                        <input className="form-control" type="text"  {...register("username")} />
+                                    </div>
+                                    <div className="form-group">
+                                        <div className="row">
+                                            <div className="col">
+                                                <label>Password</label>
+                                            </div>
+                                            <div className="col-auto">
+                                                <Link className="text-muted" to="/forgotPassword" >
+                                                    Forgot password?
+                                                </Link>
+                                            </div>
+                                        </div>
+                                        <div className="position-relative">
+                                            <input className="form-control" type="password" id="password" {...register("password")} />
+                                            <span className="fa fa-eye-slash" id="toggle-password"></span>
+                                        </div>
+                                    </div>
+                                    <div className="form-group text-center">
+                                        <button className="btn btn-primary account-btn" type="submit">Login</button>
+                                    </div>
+                                    <div className="account-footer">
+                                        <p>Don't have an account yet? <Link to="/register">Register</Link></p>
+                                    </div>
+                                </form>
+
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </>
     )

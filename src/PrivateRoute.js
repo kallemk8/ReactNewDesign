@@ -1,18 +1,21 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Topheader } from './Header/Topheader';
-import { Sideheader } from './Header/Sideheader';
+import SideHeader from './components/header/SideHeader';
+import TopHeader from './components/header/TopHeader';
+
 const PrivateRoute = ({ children}) => (
     <div className="">
         {!localStorage.getItem('user-info') ? <Navigate  to="/" /> : 
-        <>
-        <Topheader/>
-        <Sideheader/>
-            <div className='contentView'>
+        <>   
+        <div className='main-wrapper'>
+            <TopHeader></TopHeader>
+            <SideHeader></SideHeader>
+            <div className="page-wrapper">
                 {children}
             </div>
+        </div>
         </>
         }
     </div>
 )
-export default PrivateRoute;
+export default PrivateRoute
