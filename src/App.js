@@ -29,6 +29,7 @@ import ForgotPassword from './Login/ForgotPassword';
 import Register from './Login/register';
 import Dashboard from './components/Dashboard/dashboard';
 import LeaveType from './components/LeaveManagement/leaveType';
+import LeavesAssign from './components/LeaveManagement/LeavesAssign';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path='/department' element={<PrivateRoute><Department /></PrivateRoute>} />
           <Route path='/leavetype' element={<PrivateRoute><LeaveType /></PrivateRoute>} />
+          <Route path='/Leavessssign' element={<PrivateRoute><LeavesAssign /></PrivateRoute>} />
           <Route path='/designation' element={<PrivateRoute><Designation /></PrivateRoute>} />
           <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />
           <Route path='/projects' element={<PrivateRoute><Projects /></PrivateRoute>} />

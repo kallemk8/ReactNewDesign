@@ -5,35 +5,54 @@ import { Link } from "react-router-dom";
 const LeavesAssign = () => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const [leaveTypeList, setLeaveTypeList] = useState([]);
+    const [leaveassignList, setleaveassignList] = useState([]);
+    const [usersList, setusersList] = useState([]);
     const [show, setShow] = useState(false);
     const [editID, setEdited] = useState();
     const getLeaveTypeList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/leavetype');
-            console.log(response);
             setLeaveTypeList(response.data)
           } catch (error) {
             console.error(error);
           }
     }
+    const getleaveassignList = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/leaveassign');
+            setleaveassignList(response.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
+    const getUserList = async () => {
+        var user = JSON.parse(localStorage.getItem('user-info'));
+        try {
+            const response = await axios.get(`http://localhost:5000/users/companyID/${user.CompanyID}`);
+            setusersList(response.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
     useEffect(()=>{
+        getleaveassignList();
         getLeaveTypeList();
+        getUserList();
     }, [])
     const saveLeaveType = async () =>{
         var user = JSON.parse(localStorage.getItem('user-info'));
         
         var req = {
-            "name":getValues("typeName"),
-            "LeaveNumber":getValues("numberOfLeaves"),
-            "Applicable":getValues("applicable"),
-            "info":getValues("leaveReason"),
+            "leaveType":getValues("leaveType"),
+            "userID":getValues("usersList"),
+            "CurrentDate":new Date(),
             "CompanyID":user.CompanyID
         }
         if(!editID){
             try {
-                const response = await axios.post('http://localhost:5000/leavetype', req);
+                const response = await axios.post('http://localhost:5000/leaveassign', req);
                 if(response.data.insertId){
-                    getLeaveTypeList();
+                    getleaveassignList();
                     setShow(false)
                     reset();
                 }
@@ -42,9 +61,9 @@ const LeavesAssign = () => {
               }
         }else{
             try {
-                const response = await axios.put(`http://localhost:5000/leavetype/${editID}`, req);
+                const response = await axios.put(`http://localhost:5000/leaveassign/${editID}`, req);
                 if(response.data.changedRows){
-                    getLeaveTypeList();
+                    getleaveassignList();
                     setShow(false)
                     reset();
                 }
@@ -56,7 +75,7 @@ const LeavesAssign = () => {
     }
     const DeleteDepartment = async (deleteid) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/leavetype/${deleteid}`);
+            const response = await axios.delete(`http://localhost:5000/leaveassign/${deleteid}`);
             if(response.data.affectedRows){
                 getLeaveTypeList();
                 setShow(false)
@@ -179,24 +198,19 @@ const LeavesAssign = () => {
                             <table className="table table-striped custom-table mb-0 datatable">
                                 <thead>
                                     <tr>
-                                        <th>Leave Type</th>
-                                        
+                                        <th>User</th>
                                         <th>Company</th>
-                                        <th>Applicable</th>
-                                        <th>No of Leaves</th>
-                                        <th>Info</th>
+                                        <th>Leave Type</th>
                                         <th className="text-end">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {leaveTypeList.map((leaveType, i)=>{
+                                    {leaveassignList.map((leaveType, i)=>{
                                         return (
                                             <tr key={i}>
-                                                <td>{leaveType.name}</td>
+                                                <td>{leaveType.Name}</td>
                                                 <td>{leaveType.ComapnyName}</td>
-                                                <td>{leaveType.Applicable}</td>
-                                                <td>{leaveType.LeaveNumber}</td>
-                                                <td>{leaveType.info}</td>
+                                                <td>{leaveType.name}</td>
                                                 <td className="text-end">
                                                 <a  onClick={()=>LeaveTypeEdit(leaveType)} data-bs-toggle="modal" data-bs-target="#add_leave"><i className="fa fa-pencil m-r-5"></i>  Edit</a>
                                                 <a  href="#" data-bs-toggle="modal" data-bs-target="#delete_approve"><i className="fa fa-trash-o m-r-5"></i> Delete</a>
@@ -216,7 +230,7 @@ const LeavesAssign = () => {
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Type</h5>
+                            <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Assign</h5>
                             <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -225,7 +239,7 @@ const LeavesAssign = () => {
                             <form onSubmit={handleSubmit(saveLeaveType)}>
                                 <div className="form-group">
                                     <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("LeaveType")} >
+                                    <select className="form-control" {...register("leaveType")} multiple style={{height:"100px"}}>
                                         <option>Select Leave Type</option>
                                         {leaveTypeList.map((leaveType, i)=>{
                                             return (
@@ -236,18 +250,14 @@ const LeavesAssign = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Select Employee <span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("LeaveType")} >
-                                        <option>Select Leave Type</option>
-                                        {leaveTypeList.map((leaveType, i)=>{
+                                    <select className="form-control" {...register("usersList")} >
+                                        <option>Select Employee</option>
+                                        {usersList.map((user, i)=>{
                                             return (
-                                                <option value={leaveType.ID}>{leaveType.name}</option>
+                                                <option value={user.UserID}>{user.Name}</option>
                                             )
                                         })}
                                     </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Date <span className="text-danger">*</span></label>
-                                    <input type="date" className="form-control" />
                                 </div>
                                 
                                 <div className="submit-section">
