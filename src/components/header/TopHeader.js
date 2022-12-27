@@ -14,7 +14,8 @@ import avatar09 from '../../assets/img/profiles/avatar-09.jpg'
 import avatar06 from '../../assets/img/profiles/avatar-09.jpg'
 import avatar17 from '../../assets/img/profiles/avatar-17.jpg'
 import avatar13 from '../../assets/img/profiles/avatar-13.jpg'
-const TopHeader = () => {
+const TopHeader = ({smallHeaderShow}) => {
+   
     return (<>
         <div className="header">
 
@@ -27,7 +28,7 @@ const TopHeader = () => {
                 </a>
             </div>
 
-            <a id="toggle_btn" >
+            <a id="toggle_btn" onClick={()=>smallHeaderShow()}>
                 <span className="bar-icon">
                     <span></span>
                     <span></span>

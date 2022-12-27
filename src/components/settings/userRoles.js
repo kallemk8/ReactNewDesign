@@ -1,35 +1,56 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useForm } from "react-hook-form";
-const Department = () => {
+import Breadcrumb from "../header/breadcrumb";
+const UserRoles = () => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
-    const [departmentList, setDepartmentList] = useState([]);
+    const [userrolesList, setuserrolesList] = useState([]);
+    const [rolesList, setrolesList] = useState([]);
+    const [usersList, setusersList] = useState([]);
     const [department, addDepartment] = useState(false);
     const [editDepartment, seteditDepartment] = useState(false);
     const [editID, setEdited] = useState();
-    const getDepartmentList = async () => {
+    const getuserrolessList = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/department');
-            setDepartmentList(response.data)
+            const response = await axios.get('http://localhost:5000/userroles');
+            setuserrolesList(response.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
+
+    const getrolesList = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/roles');
+            setrolesList(response.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
+
+    const getusersList = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/users');
+            setusersList(response.data)
           } catch (error) {
             console.error(error);
           }
     }
     useEffect(()=>{
-        getDepartmentList();
+        getusersList();
+        getrolesList();
+        getuserrolessList();
     }, [])
     const saveDepartment = async () =>{
         var req = {
-            "name":getValues("name"),
-            "sub_depat":getValues("sub_depat"),
-            "testing":getValues("desc"),
-            "status":getValues("status")
+            "roleID":getValues("role"),
+            "userID":getValues("user")
         }
         if(!editID){
             try {
-                const response = await axios.post('http://localhost:5000/department', req);
+                const response = await axios.post('http://localhost:5000/userroles', req);
                 if(response.data.insertId){
-                    getDepartmentList();
+                    getuserrolessList();
                     addDepartment(false);
                     reset();
                 }
@@ -38,9 +59,9 @@ const Department = () => {
               }
         }else{
             try {
-                const response = await axios.put(`http://localhost:5000/department/${editID}`, req);
+                const response = await axios.put(`http://localhost:5000/userroles/${editID}`, req);
                 if(response.data.changedRows){
-                    getDepartmentList();
+                    getuserrolessList();
                     addDepartment(false);
                     reset();
                 }
@@ -52,9 +73,9 @@ const Department = () => {
     }
     const DeleteDepartment = async (deleteid) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/department/${deleteid}`);
+            const response = await axios.delete(`http://localhost:5000/userroles/${deleteid}`);
             if(response.data.affectedRows){
-                getDepartmentList();
+                getuserrolessList();
                 addDepartment(false);
                 reset();
             }
@@ -63,53 +84,50 @@ const Department = () => {
           }
     }
     const onloadDetails = (data) => {
-        setValue('name', data.name)
-        setValue('sub_depat', data.sub_depat)
-        setValue('desc', data.testing)
-        setValue('status', data.status)
+        setValue('user', data.userID)
+        setValue('role', data.roleID)
     }
     return (
         <>
-            <div className="container">
-                
+        <div className="content container-fluid">
+            <Breadcrumb title="User Roles" navigation={[{to:"/", name:"Home", show:true}, {to:"/", name:"User Role", show:false}]} />
             <table className="table">
                 <thead>
                     <tr>
-                        <th>Department Name</th>
-                        <th>Sub Department</th>
-                        <th>Description</th>
-                        <th>Status</th>
+                        <th>User Name</th>
+                        <th>Role</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {departmentList.map((item, i)=>{
+                    {userrolesList.map((item, i)=>{
                         return (
                             <tr key={i}>
                                 <td>
                                     {!editDepartment ? 
-                                    <span>{item.name}</span>
-                                    : <span><input type="text" className="form-control"  {...register("name")}  placeholder="Name"/></span>}
+                                    <span>{item.Name}</span>
+                                    : <span>
+                                        <select className="form-control" {...register("user")} >
+                                            <option value="">Select user</option>
+                                            {usersList.map((user,i)=>{
+                                                return (<option value={user.id}>{user.Name}</option>)
+                                            })}
+                                        </select>
+                                    </span>}
                                 </td>
                                 <td>
                                     {!editDepartment ? 
-                                    <span>{item.sub_depat}</span>
-                                    :<span><input type="text" className="form-control" {...register("sub_depat")}   placeholder="Name"/></span>}
-                                    
-                                </td>
-                                <td>
-                                    {!editDepartment ?<span>{item.testing}</span> :
-                                    <span><input type="text" className="form-control" {...register("desc")} placeholder="Name"/></span>}
-                                </td>
-                                <td>
-                                    {editDepartment ?<span>
-                                        <select className="form-control"  {...register("status")}  >
-                                            <option value="">Select Status</option>
-                                            <option value="1">Active</option>
-                                            <option value="2">Inactive</option>
+                                    <span>{item.role_name}</span>
+                                    :<span>
+                                        <select className="form-control" {...register("role")} >
+                                            <option value="">Select role</option>
+                                            {rolesList.map((role,i)=>{
+                                                return (<option value={role.id}>{role.role_name}</option>)
+                                            })}
                                         </select>
-                                    </span>:
-                                    <span>{item.status === 1 ?  "Active" : "Inactive"}</span>}
+                                    </span>
+                                    }
+                                    
                                 </td>
                                 <td>
                                     {editDepartment ? <><button className="btn btn-primary" onClick={()=>saveDepartment()}>Save</button> 
@@ -135,19 +153,19 @@ const Department = () => {
                     {department ?
                     <tr>
                         <td>
-                            <input type="text" className="form-control" {...register("name")}   placeholder="Name"/>
+                            <select className="form-control" {...register("user")} >
+                                <option value="">Select User</option>
+                                {usersList.map((user,i)=>{
+                                    return (<option value={user.UserID}>{user.Name}</option>)
+                                })}
+                            </select>
                         </td>
                         <td>
-                            <input type="text" className="form-control" {...register("sub_depat")}  placeholder="Sub Department" />
-                        </td>
-                        <td>
-                            <input type="text" className="form-control" {...register("desc")} placeholder="Description" />
-                        </td>
-                        <td>
-                            <select className="form-control" {...register("status")} >
-                                <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
+                            <select className="form-control" {...register("role")} >
+                                <option value="">Select Role</option>
+                                {rolesList.map((role,i)=>{
+                                    return (<option value={role.ID}>{role.role_name}</option>)
+                                })}
                             </select>
                         </td>
                         <td>
@@ -181,4 +199,4 @@ const Department = () => {
         </>
     )
 }
-export default Department;
+export default UserRoles;

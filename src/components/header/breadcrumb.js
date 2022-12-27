@@ -11,9 +11,9 @@ const Breadcrumb = ({title, navigation, subnavigation}) => {
                         <ul className="breadcrumb">
                             {navigation.map((item,i)=>{
                                 if(item.show){
-                                    return (<li className="breadcrumb-item active"><Link to={item.to}>{item.name}</Link></li>)
+                                    return (<li key={i} className="breadcrumb-item active"><Link to={item.to}>{item.name}</Link></li>)
                                 }else{
-                                    return (<li className="breadcrumb-item active">{item.name}</li>)
+                                    return (<li key={i}  className="breadcrumb-item active">{item.name}</li>)
                                 }
                                 
                             })}

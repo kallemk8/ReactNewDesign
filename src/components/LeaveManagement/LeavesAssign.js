@@ -101,14 +101,14 @@ const LeavesAssign = () => {
                 <div className="page-header">
                     <div className="row align-items-center">
                         <div className="col">
-                            <h3 className="page-title">Leaves</h3>
+                            <h3 className="page-title">Leaves Assign</h3>
                             <ul className="breadcrumb">
                                 <li className="breadcrumb-item"><Link to="/">Dashboard</Link></li>
-                                <li className="breadcrumb-item active">Leaves</li>
+                                <li className="breadcrumb-item active">Leave Assign</li>
                             </ul>
                         </div>
                         <div className="col-auto float-end ms-auto">
-                            <a href="#" className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leave" ><i className="fa fa-plus"></i> Leave Type</a>
+                            <a href="#" className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leave" ><i className="fa fa-plus"></i> Leave Assign</a>
                         </div>
                     </div>
                 </div>
@@ -243,7 +243,7 @@ const LeavesAssign = () => {
                                         <option>Select Leave Type</option>
                                         {leaveTypeList.map((leaveType, i)=>{
                                             return (
-                                                <option value={leaveType.ID}>{leaveType.name}</option>
+                                                <option key={i} value={leaveType.ID}>{leaveType.name}</option>
                                             )
                                         })}
                                     </select>
@@ -254,7 +254,7 @@ const LeavesAssign = () => {
                                         <option>Select Employee</option>
                                         {usersList.map((user, i)=>{
                                             return (
-                                                <option value={user.UserID}>{user.Name}</option>
+                                                <option key={i} value={user.UserID}>{user.Name}</option>
                                             )
                                         })}
                                     </select>

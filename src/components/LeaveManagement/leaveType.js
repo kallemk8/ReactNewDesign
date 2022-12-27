@@ -10,7 +10,6 @@ const LeaveType = () => {
     const getLeaveTypeList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/leavetype');
-            console.log(response);
             setLeaveTypeList(response.data)
           } catch (error) {
             console.error(error);
@@ -82,10 +81,10 @@ const LeaveType = () => {
                 <div className="page-header">
                     <div className="row align-items-center">
                         <div className="col">
-                            <h3 className="page-title">Leaves</h3>
+                            <h3 className="page-title">Leave Types</h3>
                             <ul className="breadcrumb">
                                 <li className="breadcrumb-item"><Link to="/">Dashboard</Link></li>
-                                <li className="breadcrumb-item active">Leaves</li>
+                                <li className="breadcrumb-item active">Leave Types</li>
                             </ul>
                         </div>
                         <div className="col-auto float-end ms-auto">

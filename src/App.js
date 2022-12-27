@@ -30,16 +30,11 @@ import Register from './Login/register';
 import Dashboard from './components/Dashboard/dashboard';
 import LeaveType from './components/LeaveManagement/leaveType';
 import LeavesAssign from './components/LeaveManagement/LeavesAssign';
-
+import LeavesList from './components/LeaveManagement/Leaves';
+import 'bootstrap/dist/js/bootstrap.bundle'
+import UserRoles from './components/settings/userRoles';
 function App() {
   return (
-
-    // <BrowserRouter>
-    //     <Routes>
-    //     <Route exact path="/linkedin" component={LinkedInCallback} />
-    //     <Route  path="/" component={GoogleSingup} />
-    //     </Routes>
-    // </BrowserRouter>
     <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
@@ -49,16 +44,16 @@ function App() {
           <Route path='/department' element={<PrivateRoute><Department /></PrivateRoute>} />
           <Route path='/leavetype' element={<PrivateRoute><LeaveType /></PrivateRoute>} />
           <Route path='/Leavessssign' element={<PrivateRoute><LeavesAssign /></PrivateRoute>} />
+          <Route path='/leaves' element={<PrivateRoute><LeavesList /></PrivateRoute>} />
           <Route path='/designation' element={<PrivateRoute><Designation /></PrivateRoute>} />
           <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />
           <Route path='/projects' element={<PrivateRoute><Projects /></PrivateRoute>} />
-
           <Route path='/calender' element={<PrivateRoute><TimelineResource /></PrivateRoute>} />
           <Route exact path="/linkedin" element={<LinkedInCallback/>} />
-        
           <Route path='/meetings' element={<PrivateRoute><Meetings /></PrivateRoute>} />
           <Route path='/googleSingup' element={<PrivateRoute><GoogleSingup /></PrivateRoute>} />
           <Route path='/project/:id' element={<PrivateRoute><SingleProject /></PrivateRoute>} />
+          <Route path='/userroles' element={<PrivateRoute><UserRoles /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
   );
