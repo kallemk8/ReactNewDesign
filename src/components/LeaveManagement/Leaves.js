@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 const LeavesList = () => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const [leaveList, setLeaveList] = useState([]);
@@ -10,6 +12,7 @@ const LeavesList = () => {
     const [show, setShow] = useState(false);
     const [showEnd, setshowEnd] = useState(true);
     const [editID, setEdited] = useState();
+    const handleClose = () => {setShow(false); reset();};
     const getLeaveTypeList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/leavetype');
@@ -68,29 +71,29 @@ const LeavesList = () => {
             "halfDaysection":halfDaysection
         }
         console.log(req)
-        // if(!editID){
-        //     try {
-        //         const response = await axios.post('http://localhost:5000/leaves', req);
-        //         if(response.data.insertId){
-        //             getLeaveList();
-        //             setShow(false)
-        //             reset();
-        //         }
-        //       } catch (error) {
-        //         console.error(error);
-        //       }
-        // }else{
-        //     try {
-        //         const response = await axios.put(`http://localhost:5000/leaves/${editID}`, req);
-        //         if(response.data.changedRows){
-        //             getLeaveList();
-        //             setShow(false)
-        //             reset();
-        //         }
-        //       } catch (error) {
-        //         console.error(error);
-        //       }
-        // }
+        if(!editID){
+            try {
+                const response = await axios.post('http://localhost:5000/leaves', req);
+                if(response.data.insertId){
+                    getLeaveList();
+                    setShow(false)
+                    reset();
+                }
+              } catch (error) {
+                console.error(error);
+              }
+        }else{
+            try {
+                const response = await axios.put(`http://localhost:5000/leaves/${editID}`, req);
+                if(response.data.changedRows){
+                    getLeaveList();
+                    setShow(false)
+                    reset();
+                }
+              } catch (error) {
+                console.error(error);
+              }
+        }
         
     }
     const DeleteDepartment = async (deleteid) => {
@@ -106,10 +109,16 @@ const LeavesList = () => {
           }
     }
     const onloadDetails = (data) => {
-        setValue('typeName', data.name)
-        setValue('numberOfLeaves', data.LeaveNumber)
-        setValue('applicable', data.Applicable)
-        setValue('leaveReason', data.info)
+        if(data.halfDay === 0){setValue('fullDay', "1")} 
+        if(data.halfDay === 1){setValue('halfDay', "0")} 
+        setValue('leaveType', data.leaveType)
+        setValue('startDate', moment(data.startDate).format('YYYY-MM-DD'))
+        setValue('endDate', moment(data.endDate).format('YYYY-MM-DD'))
+        setValue('days', data.numberOfLeaves)
+        setValue('reason', data.Reason)
+        setValue('status', data.status)
+        setValue('halfDay', data.halfDay)
+        setValue('halfDaysection', data.halfDaysection)
     }
     const LeaveTypeEdit = (data) => {
         onloadDetails(data);
@@ -128,12 +137,10 @@ const LeavesList = () => {
                             </ul>
                         </div>
                         <div className="col-auto float-end ms-auto">
-                            <a href="#" className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leave" onClick={()=>setShow(true)}><i className="fa fa-plus"></i> Apply Leave </a>
+                            <button  className="btn add-btn" onClick={()=>{setShow(true); setEdited("")}}><i className="fa fa-plus"></i> Apply Leave </button>
                         </div>
                     </div>
                 </div>
-
-
                 {/* <div className="row">
                     <div className="col-md-3">
                         <div className="stats-info">
@@ -235,12 +242,12 @@ const LeavesList = () => {
                                                 <td>{leave.EmpName}</td>
                                                 <td>{leave.name}</td>
                                                 <td>{moment(leave.startDate).format('DD-MM-YYYY')}</td>
-                                                <td>{moment(leave.endDate).format('DD-MM-YYYY')}</td>
-                                                <td>{leave.numberOfLeaves}</td>
+                                                <td>{leave.endDate !=="0000-00-00"  ? moment(leave.endDate).format('DD-MM-YYYY') : "-"}</td>
+                                                <td>{leave.numberOfLeaves == 0 ? 0.5 : leave.numberOfLeaves}</td>
                                                 <td>{leave.status == 1 ?  "Pending": leave.status == 2 ? "Approve" : leave.status == 3 ? "Cancel": "Reject"}</td>
                                                 <td className="text-end">
-                                                <a  onClick={()=>LeaveTypeEdit(leave)} data-bs-toggle="modal" data-bs-target="#add_leave"><i className="fa fa-pencil m-r-5"></i>  Edit</a>
-                                                <a  href="#" ><i className="fa fa-trash-o m-r-5"></i> Delete</a>
+                                                <a  onClick={()=>{LeaveTypeEdit(leave); setShow(true)}} ><i className="fa fa-pencil m-r-5"></i>  Edit</a>
+                                                <a  onClick={()=>{DeleteDepartment(leave.ID);}}  href="#" ><i className="fa fa-trash-o m-r-5"></i> Delete</a>
                                                 </td>
                                             </tr>
                                         )
@@ -252,124 +259,73 @@ const LeavesList = () => {
                     </div>
                 </div>
             </div>
-
-            <div id="add_leave"  className="modal custom-modal fade" role="dialog" >
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Type</h5>
-                            <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <form onSubmit={handleSubmit(saveLeaveType)}>
-                                <div className="form-group">
-                                    <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("leaveType")} >
-                                        <option>Select Leave Type</option>
-                                        {leaveTypeList.map((leaveType, i)=>{
-                                            return (
-                                                <option key={i} value={leaveType.ID}>{leaveType.name}</option>
-                                            )
-                                        })}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <div className="form-check form-check-inline">
-                                        <input type="radio" name="leaveTypeDay" id="gender_male" {...register("fullDay")}  className="form-check-input" onChange={()=>selectedDayType(1)}/>
-                                        <label htmlFor="gender_male" className="form-check-label"> Full Day </label>
-                                    </div>
-                                    <div className="form-check form-check-inline">
-                                        <input type="radio" name="leaveTypeDay" id="gender_female" {...register("halfDay")} className="form-check-input" onChange={()=>selectedDayType(2)}/>
-                                        <label htmlFor="gender_female" className="form-check-label"> Half Day </label>
-                                    </div>
-                                </div>
-                               
-                                <div className="form-group">
-                                    <label>Start Date <span className="text-danger">*</span></label>
-                                    <input className="form-control" type="date" {...register("startDate")} onChange={(e)=>checknumberOfdays(e.target.value, getValues("endDate") )} />
-                                </div>
-                                {showEnd ? 
-                                <>
-                                    <div className="form-group">
-                                        <label>End Date <span className="text-danger">*</span></label>
-                                        <input className="form-control" type="date" {...register("endDate")} onChange={(e)=>checknumberOfdays(getValues("startDate") ,e.target.value)} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Days<span className="text-danger">*</span></label>
-                                        <input className="form-control" type="text" readOnly {...register("days")} />
-                                    </div>
-                                </>
-                                
-                                : <div className="form-group">
-                                    <label>Select Half Day<span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("halfDaysection")} >
-                                        <option value="0">Select Half Day</option>
-                                        <option value="1">First Half Day</option>
-                                        <option value="2">Second Half Day</option>
-                                    </select>
-                                </div>}
-                                
-                                <div className="form-group">
-                                    <label>Reason<span className="text-danger">*</span></label>
-                                    <textarea rows="4" className="form-control" {...register("reason")} ></textarea>
-                                </div>
-                                <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" type="submit">Submit</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+            
+            <Modal show={show} onHide={handleClose}>
+                <div className="modal-header" >
+                    <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Type</h5>
+                    <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close"  onClick={handleClose}>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-
-            <div className="modal custom-modal fade" id="approve_leave" role="dialog">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <div className="form-header">
-                                <h3>Leave Approve</h3>
-                                <p>Are you sure want to approve for this leave?</p>
+                <div className="modal-body">
+                    <form onSubmit={handleSubmit(saveLeaveType)}>
+                        <div className="form-group">
+                            <label>Leave Type <span className="text-danger">*</span></label>
+                            <select className="form-control" {...register("leaveType")} >
+                                <option>Select Leave Type</option>
+                                {leaveTypeList.map((leaveType, i)=>{
+                                    return (
+                                        <option key={i} value={leaveType.ID}>{leaveType.name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <div className="form-check form-check-inline">
+                                <input type="radio" name="leaveTypeDay" id="gender_male" {...register("fullDay")} value={1} className="form-check-input" onChange={()=>selectedDayType(1)}/>
+                                <label htmlFor="gender_male" className="form-check-label"> Full Day </label>
                             </div>
-                            <div className="modal-btn delete-action">
-                                <div className="row">
-                                    <div className="col-6">
-                                        <a className="btn btn-primary continue-btn">Approve</a>
-                                    </div>
-                                    <div className="col-6">
-                                        <a data-bs-dismiss="modal" className="btn btn-primary cancel-btn">Decline</a>
-                                    </div>
-                                </div>
+                            <div className="form-check form-check-inline">
+                                <input type="radio" name="leaveTypeDay" id="gender_female" {...register("halfDay")} value={0}  className="form-check-input" onChange={()=>selectedDayType(2)}/>
+                                <label htmlFor="gender_female" className="form-check-label"> Half Day </label>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className="modal custom-modal fade" id="delete_approve" role="dialog">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <div className="form-header">
-                                <h3>Delete Leave</h3>
-                                <p>Are you sure want to delete this leave?</p>
-                            </div>
-                            <div className="modal-btn delete-action">
-                                <div className="row">
-                                    <div className="col-6">
-                                        <a className="btn btn-primary continue-btn">Delete</a>
-                                    </div>
-                                    <div className="col-6">
-                                        <a  data-bs-dismiss="modal" className="btn btn-primary cancel-btn">Cancel</a>
-                                    </div>
-                                </div>
-                            </div>
+                        
+                        <div className="form-group">
+                            <label>Start Date <span className="text-danger">*</span></label>
+                            <input className="form-control" type="date" {...register("startDate")} onChange={(e)=>checknumberOfdays(e.target.value, getValues("endDate") )} />
                         </div>
-                    </div>
+                        {showEnd ? 
+                        <>
+                            <div className="form-group">
+                                <label>End Date <span className="text-danger">*</span></label>
+                                <input className="form-control" type="date" {...register("endDate")} onChange={(e)=>checknumberOfdays(getValues("startDate") ,e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label>Days<span className="text-danger">*</span></label>
+                                <input className="form-control" type="text" readOnly {...register("days")} />
+                            </div>
+                        </>
+                        
+                        : <div className="form-group">
+                            <label>Select Half Day<span className="text-danger">*</span></label>
+                            <select className="form-control" {...register("halfDaysection")} >
+                                <option value="0">Select Half Day</option>
+                                <option value="1">First Half Day</option>
+                                <option value="2">Second Half Day</option>
+                            </select>
+                        </div>}
+                        
+                        <div className="form-group">
+                            <label>Reason<span className="text-danger">*</span></label>
+                            <textarea rows="4" className="form-control" {...register("reason")} ></textarea>
+                        </div>
+                        <div className="submit-section">
+                            <button className="btn btn-primary submit-btn" type="submit">Submit</button>
+                        </div>
+                    </form>
                 </div>
-            </div>
+            </Modal>
         </>
     )
 }

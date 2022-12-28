@@ -33,6 +33,7 @@ import LeavesAssign from './components/LeaveManagement/LeavesAssign';
 import LeavesList from './components/LeaveManagement/Leaves';
 import 'bootstrap/dist/js/bootstrap.bundle'
 import UserRoles from './components/settings/userRoles';
+import AllEmployees from './components/Employee/AllEmployes';
 function App() {
   return (
     <BrowserRouter>
@@ -48,6 +49,7 @@ function App() {
           <Route path='/designation' element={<PrivateRoute><Designation /></PrivateRoute>} />
           <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />
           <Route path='/projects' element={<PrivateRoute><Projects /></PrivateRoute>} />
+          <Route path='/AllEmployes' element={<PrivateRoute><AllEmployees /></PrivateRoute>} />
           <Route path='/calender' element={<PrivateRoute><TimelineResource /></PrivateRoute>} />
           <Route exact path="/linkedin" element={<LinkedInCallback/>} />
           <Route path='/meetings' element={<PrivateRoute><Meetings /></PrivateRoute>} />

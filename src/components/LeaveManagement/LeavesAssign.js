@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import Modal from 'react-bootstrap/Modal';
 const LeavesAssign = () => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const [leaveTypeList, setLeaveTypeList] = useState([]);
@@ -9,6 +10,7 @@ const LeavesAssign = () => {
     const [usersList, setusersList] = useState([]);
     const [show, setShow] = useState(false);
     const [editID, setEdited] = useState();
+    const handleClose = () => {setShow(false); reset();};
     const getLeaveTypeList = async () => {
         try {
             const response = await axios.get('http://localhost:5000/leavetype');
@@ -86,14 +88,14 @@ const LeavesAssign = () => {
           }
     }
     const onloadDetails = (data) => {
-        setValue('typeName', data.name)
-        setValue('numberOfLeaves', data.LeaveNumber)
-        setValue('applicable', data.Applicable)
-        setValue('leaveReason', data.info)
+        setValue('leaveType', data.leaveType)
+        setValue('usersList', data.userID)
+
     }
     const LeaveTypeEdit = (data) => {
         onloadDetails(data);
         setEdited(data.ID)
+        setShow(true)
     }
     return (
         <>
@@ -108,7 +110,7 @@ const LeavesAssign = () => {
                             </ul>
                         </div>
                         <div className="col-auto float-end ms-auto">
-                            <a href="#" className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leave" ><i className="fa fa-plus"></i> Leave Assign</a>
+                            <a href="#" className="btn add-btn" onClick={()=>{setShow(true); setEdited("")}}><i className="fa fa-plus"></i> Leave Assign</a>
                         </div>
                     </div>
                 </div>
@@ -212,8 +214,8 @@ const LeavesAssign = () => {
                                                 <td>{leaveType.ComapnyName}</td>
                                                 <td>{leaveType.name}</td>
                                                 <td className="text-end">
-                                                <a  onClick={()=>LeaveTypeEdit(leaveType)} data-bs-toggle="modal" data-bs-target="#add_leave"><i className="fa fa-pencil m-r-5"></i>  Edit</a>
-                                                <a  href="#" data-bs-toggle="modal" data-bs-target="#delete_approve"><i className="fa fa-trash-o m-r-5"></i> Delete</a>
+                                                <a  onClick={()=>{LeaveTypeEdit(leaveType); setShow(true)}} ><i className="fa fa-pencil m-r-5"></i>  Edit</a>
+                                                <a onClick={()=>{DeleteDepartment(leaveType.ID);}} ><i className="fa fa-trash-o m-r-5"></i> Delete</a>
                                                 </td>
                                             </tr>
                                         )
@@ -226,49 +228,44 @@ const LeavesAssign = () => {
                 </div>
             </div>
 
-            <div id="add_leave" className="modal custom-modal fade" role="dialog" >
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Assign</h5>
-                            <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <form onSubmit={handleSubmit(saveLeaveType)}>
-                                <div className="form-group">
-                                    <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("leaveType")} multiple style={{height:"100px"}}>
-                                        <option>Select Leave Type</option>
-                                        {leaveTypeList.map((leaveType, i)=>{
-                                            return (
-                                                <option key={i} value={leaveType.ID}>{leaveType.name}</option>
-                                            )
-                                        })}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Select Employee <span className="text-danger">*</span></label>
-                                    <select className="form-control" {...register("usersList")} >
-                                        <option>Select Employee</option>
-                                        {usersList.map((user, i)=>{
-                                            return (
-                                                <option key={i} value={user.UserID}>{user.Name}</option>
-                                            )
-                                        })}
-                                    </select>
-                                </div>
-                                
-                                <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" type="submit">Submit</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+            <Modal show={show} onHide={handleClose}>
+                <div className="modal-header">
+                    <h5 className="modal-title">{editID ? "Update" : "Add"} Leave Assign</h5>
+                    <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={()=>handleClose()}>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-
+                <div className="modal-body">
+                    <form onSubmit={handleSubmit(saveLeaveType)}>
+                        <div className="form-group">
+                            <label>Leave Type <span className="text-danger">*</span></label>
+                            <select className="form-control" {...register("leaveType")} >
+                                <option>Select Leave Type</option>
+                                {leaveTypeList.map((leaveType, i)=>{
+                                    return (
+                                        <option key={i} value={leaveType.ID}>{leaveType.name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Select Employee <span className="text-danger">*</span></label>
+                            <select className="form-control" {...register("usersList")} >
+                                <option>Select Employee</option>
+                                {usersList.map((user, i)=>{
+                                    return (
+                                        <option key={i} value={user.UserID}>{user.Name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        
+                        <div className="submit-section">
+                            <button className="btn btn-primary submit-btn" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
             <div className="modal custom-modal fade" id="approve_leave" role="dialog">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
