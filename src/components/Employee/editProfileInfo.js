@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
+import moment from "moment/moment";
+const EditProfileInfo = ({saveLeaveType, onloadDetails}) => {
     const { register, handleSubmit, watch, setValue, getValues,reset, formState: { errors } } = useForm();
     const [departmentList, setDepartmentList] = useState([])
+    const [profileImage, setprofileImage] = useState()
     const [designationList, setDesignationList] = useState([])
     const getDepartmentList = async () => {
         try {
@@ -23,22 +25,50 @@ const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
           }
     }
     useEffect(()=>{
-        
+        console.log(onloadDetails)
+        setValue("firstName", onloadDetails.Name)
+        setValue("lastName", onloadDetails.lastname)
+        setValue("dob", moment(onloadDetails.dob).format('YYYY-MM-DD'))
+        setValue("gender", onloadDetails.Gender)
+        setValue("address", onloadDetails.Address)
+        setValue("phone", onloadDetails.Mobile)
+        setValue("department", onloadDetails.Department)
+        setValue("designation", onloadDetails.Designation)
+        setValue("reportsto", onloadDetails.Reporting)
+        setValue("state", onloadDetails.state)
+        setValue("country", onloadDetails.country)
+        setValue("pincode", onloadDetails.pincode)
         getDesignationList();
         getDepartmentList();
-        if(isEdited){
-            setValue('firstName', onloadDetails.Name)
-            setValue('phone', onloadDetails.Mobile)
-            setValue('joiningDate', onloadDetails.DateOfJoining)
-            setValue('employeeID', onloadDetails.EmpID)
-            setValue('email', onloadDetails.Email)
-            setValue('department', onloadDetails.Department)
-            setValue('designation', onloadDetails.Designation)
-        }
     }, [])
+    const uploadFiletoNew = async (data) => {
+        const formData = new FormData();
+        formData.append("myImage", data.target.files[0]);
+        try {
+            const response = await axios.post('http://localhost:5000/upload', formData);
+            setValue('profileImage', response.data.file)
+            setprofileImage(response.data.file)
+            //setDesignationList(response.data)
+          } catch (error) {
+            console.error(error);
+          }
+    }
     return (
         <form onSubmit={handleSubmit(saveLeaveType)}>
             <div className="row">
+                <div className="col-md-12">
+                    <div className="profile-img-wrap edit-img">
+                        <img className="inline-block" src={profileImage?`http://localhost:5000/${profileImage}`:"https://i.pravatar.cc/300"}
+                            alt="user" />
+                        <div className="fileupload btn">
+                            <span className="btn-text">edit</span>
+                            <input className="upload" type="file" onChange={(e)=>uploadFiletoNew(e)} />
+                            
+                        </div>
+                        <input type="hidden"  {...register("profileImage")} />
+                    </div>
+
+                </div>
                 <div className="col-sm-6">
                     <div className="form-group">
                         <label className="col-form-label">First Name <span className="text-danger">*</span></label>
@@ -52,40 +82,45 @@ const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
                 </div>
                 <div className="col-sm-6">
                     <div className="form-group">
-                        <label className="col-form-label">Username <span  className="text-danger">*</span></label>
-                        <input className="form-control" type="text" {...register("username")} />
+                        <label className="col-form-label">Birth Date <span className="text-danger">*</span></label>
+                        <input className="form-control datetimepicker" type="date" {...register("dob")} />
                     </div>
                 </div>
                 <div className="col-sm-6">
                     <div className="form-group">
-                        <label className="col-form-label">Email <span  className="text-danger">*</span></label>
-                        <input className="form-control" type="email" {...register("email")} />
+                        <label className="col-form-label">Gender <span  className="text-danger">*</span></label>
+                        <select className="form-control" {...register("gender")}>
+                            <option value="">Select Gender</option>
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="col-sm-12">
+                    <div className="form-group">
+                        <label className="col-form-label">Address</label>
+                        <input className="form-control" type="text" {...register("address")}/>
                     </div>
                 </div>
                 <div className="col-sm-6">
                     <div className="form-group">
-                        <label className="col-form-label">Password</label>
-                        <input className="form-control" type="password" {...register("password")}/>
+                        <label className="col-form-label">State</label>
+                        <input className="form-control" type="text" {...register("state")}/>
                     </div>
                 </div>
                 <div className="col-sm-6">
                     <div className="form-group">
-                        <label className="col-form-label">Confirm Password</label>
-                        <input className="form-control" type="password" {...register("confirmpassword")}/>
+                        <label className="col-form-label">Country <span className="text-danger">*</span></label>
+                        <input type="text" className="form-control" {...register("country")} />
                     </div>
                 </div>
                 <div className="col-sm-6">
                     <div className="form-group">
-                        <label className="col-form-label">Employee ID <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" {...register("employeeID")} />
+                        <label className="col-form-label">Pin Code <span className="text-danger">*</span></label>
+                        <input type="text" className="form-control" {...register("pincode")} />
                     </div>
                 </div>
-                <div className="col-sm-6">
-                    <div className="form-group">
-                        <label className="col-form-label">Joining Date <span className="text-danger">*</span></label>
-                        <input className="form-control datetimepicker" type="date" {...register("joiningDate")} />
-                    </div>
-                </div>
+               
                 <div className="col-sm-6">
                     <div className="form-group">
                         <label className="col-form-label">Phone </label>
@@ -108,7 +143,7 @@ const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
 
                             <option>Select Department</option>
                             {departmentList.map((department,i)=>{
-                                return (<option value={department.ID}>{department.name}</option>)
+                                return (<option key={i} value={department.ID}>{department.name}</option>)
                             })}
                         </select>
                     </div>
@@ -119,7 +154,18 @@ const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
                         <select className="form-control" {...register("designation")}>
                             <option>Select Designation</option>
                             {designationList.map((designation,i)=>{
-                                return (<option value={designation.ID}>{designation.designation}</option>)
+                                return (<option key={i} value={designation.ID}>{designation.designation}</option>)
+                            })}
+                        </select>
+                    </div>
+                </div>
+                <div className="col-md-6">
+                    <div className="form-group">
+                        <label>Reports To <span className="text-danger">*</span></label>
+                        <select className="form-control" {...register("reportsto")}>
+                            <option>Select Reports To</option>
+                            {designationList.map((designation,i)=>{
+                                return (<option key={i} value={designation.ID}>{designation.designation}</option>)
                             })}
                         </select>
                     </div>
@@ -133,4 +179,4 @@ const AddEmployee = ({saveLeaveType, isEdited, onloadDetails}) => {
     )
 }
 
-export default AddEmployee;
+export default EditProfileInfo;
