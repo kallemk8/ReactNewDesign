@@ -67,7 +67,7 @@ const SideHeader = ({showMenuBar}) => {
                             <ul  className={showEmployeeBTN ? "displayShow": "displayHide"}>
                                 <li><Link to="/users">Add Employee</Link></li>
                                 <li><Link to="/users">Edit Employee</Link></li>
-                                <li><Link to="/users">All Employees </Link></li>
+                                <li><Link to="/AllEmployes">All Employees </Link></li>
                             </ul>
                         </li>
 

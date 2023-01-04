@@ -58,7 +58,7 @@ const EditProfileInfo = ({saveLeaveType, onloadDetails}) => {
             <div className="row">
                 <div className="col-md-12">
                     <div className="profile-img-wrap edit-img">
-                        <img className="inline-block" src={profileImage?`http://localhost:5000/${profileImage}`:"https://i.pravatar.cc/300"}
+                        <img className="inline-block" src={onloadDetails.profileImage?`http://localhost:5000/${onloadDetails.profileImage}`:"https://i.pravatar.cc/300"}
                             alt="user" />
                         <div className="fileupload btn">
                             <span className="btn-text">edit</span>

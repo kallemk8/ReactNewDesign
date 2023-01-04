@@ -5,10 +5,22 @@ import Modal from 'react-bootstrap/Modal';
 import AddEmployee from "./addEmployee";
 import moment from "moment/moment";
 import EditProfileInfo from "./editProfileInfo";
+import EditProfileNation from "./editProfileNation";
+import EditProfileContact from "./editProfileContact";
+import EditProfileBank from "./editProfileBank";
+import EditProfileFamily from "./editProfileFamily";
 const ViewEployee = () => {
     const [onloadData, setonloadData] = useState({});
     const [show, setShow] = useState(false);
+    const [showPersonal, setShowPersonal] = useState(false);
+    const [showContact, setShowContact] = useState(false);
+    const [showBank, setShowBank] = useState(false);
+    const [showFamily, setShowFamily] = useState(false);
     const handleClose = () => { setShow(false);};
+    const handleClosePersonal = () => { setShowPersonal(false);};
+    const handleCloseContact = () => { setShowContact(false);};
+    const handleCloseBank = () => { setShowBank(false);};
+    const handleCloseFamily = () => { setShowFamily(false);};
     const { id } = useParams();
     const getEmployeesList = async () => {
         try {
@@ -21,6 +33,84 @@ const ViewEployee = () => {
     useEffect(() => {
         getEmployeesList();
     }, [])
+    const saveProfileFamily = async (data) => {
+        console.log(data)
+
+        var req = {
+            "family":data,
+        }
+        console.log(req)
+        try {
+            const response = await axios.post(`http://localhost:5000/employee/updateProfileFamily/${id}`, req);
+            if (response.data.affectedRows) {
+                //getEmployeesList();
+                setShowFamily(false)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const saveProfileBank = async (data) => {
+        var req = {
+            "UserID":onloadData.UserID,
+            "Bankname": data.Bankname,
+            "BankaccountNo":data.BankaccountNo,
+            "IFSCCode": data.IFSCCode,
+            "PANNo":data.PANNo,
+        }
+        console.log(req)
+        try {
+            const response = await axios.put(`http://localhost:5000/employee/updateProfileBank/${id}`, req);
+            if (response.data.affectedRows) {
+                getEmployeesList();
+                setShowBank(false)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const saveProfileContact = async (data) => {
+        var req = {
+            "UserID":onloadData.UserID,
+            "PrimaryName": data.PrimaryName,
+            "PrimaryRelationship":data.PrimaryRelationship,
+            "PrimaryPhone": data.PrimaryPhone,
+            "SecondaryName":data.SecondaryName,
+            "SecondaryRelationship":data.SecondaryRelationship,
+            "SecondaryPhone":data.SecondaryPhone,
+        }
+        console.log(req)
+        try {
+            const response = await axios.put(`http://localhost:5000/employee/updateProfileContact/${id}`, req);
+            if (response.data.affectedRows) {
+                getEmployeesList();
+                setShowContact(false)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const saveProfileNation1 = async (data) => {
+        var req = {
+            "UserID":onloadData.UserID,
+            "Passport": data.PassportNo,
+            "Nationality":data.Nationality,
+            "Religion": data.Religion,
+            "MaritalStatus":data.MaritalStatus,
+            "spouse":data.spouse,
+            "children":data.children,
+        }
+        console.log(req)
+        try {
+            const response = await axios.put(`http://localhost:5000/employee/updateProfileNation/${id}`, req);
+            if (response.data.affectedRows) {
+                getEmployeesList();
+                setShowPersonal(false)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
     const saveLeaveType = async (data) => {
         var req = {
             "UserID":onloadData.UserID,
@@ -36,9 +126,12 @@ const ViewEployee = () => {
             "state": data.state,
             "country": data.country,
             "pincode": data.pincode,
-            "profileImage":data.profileImage
+            
         }
-        console.log(req);
+        if(data.profileImage){
+            req.profileImage = data.profileImage;
+        }
+    
         try {
             const response = await axios.put(`http://localhost:5000/employee/updateProfileInfo/${id}`, req);
             if (response.data.affectedRows) {
@@ -84,7 +177,7 @@ const ViewEployee = () => {
                                 <div className="profile-view">
                                     <div className="profile-img-wrap">
                                         <div className="profile-img">
-                                            <a href="#"><img alt="" src="assets/img/profiles/avatar-02.jpg" /></a>
+                                            <a href="#"><img alt="" src={onloadData.profileImage ? "http://localhost:5000/"+onloadData.profileImage : ""} /></a>
                                         </div>
                                     </div>
                                     <div className="profile-basic">
@@ -113,16 +206,15 @@ const ViewEployee = () => {
                                                     </li>
                                                     <li>
                                                         <div className="title">Birthday:</div>
-                                                        <div className="text">{moment(onloadData.dob).format("d MMM")}</div>
+                                                        <div className="text">{moment(onloadData.dob).format("Do MMM")}</div>
                                                     </li>
                                                     <li>
                                                         <div className="title">Address:</div>
-                                                        <div className="text">1861 Bayonne Ave, Manchester Township, NJ,
-                                                            08759</div>
+                                                        <div className="text">{onloadData.Address + " " + onloadData.state + " " + onloadData.country + " " + onloadData.pincode } </div>
                                                     </li>
                                                     <li>
                                                         <div className="title">Gender:</div>
-                                                        <div className="text">Male</div>
+                                                        <div className="text">{onloadData.Gender == 1 ? "Male" : "Female"}</div>
                                                     </li>
                                                     <li>
                                                         <div className="title">Reports to:</div>
@@ -169,41 +261,39 @@ const ViewEployee = () => {
                             <div className="col-md-6 d-flex">
                                 <div className="card profile-box flex-fill">
                                     <div className="card-body">
-                                        <h3 className="card-title">Personal Informations <a href="#" className="edit-icon"
-                                            data-bs-toggle="modal" data-bs-target="#personal_info_modal"><i
-                                                className="fa fa-pencil"></i></a></h3>
+                                        <h3 className="card-title">Personal Informations <a href="#" onClick={()=>setShowPersonal(true)} className="edit-icon" ><i  className="la la-pencil"></i></a></h3>
                                         <ul className="personal-info">
                                             <li>
                                                 <div className="title">Passport No.</div>
-                                                <div className="text">9876543210</div>
+                                                <div className="text">{onloadData.Passport}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Passport Exp Date.</div>
-                                                <div className="text">9876543210</div>
+                                                <div className="text">{onloadData.Passport}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Tel</div>
-                                                <div className="text"><a href="">9876543210</a></div>
+                                                <div className="text"><a href="">{onloadData.Passport}</a></div>
                                             </li>
                                             <li>
                                                 <div className="title">Nationality</div>
-                                                <div className="text">Indian</div>
+                                                <div className="text">{onloadData.Nationality}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Religion</div>
-                                                <div className="text">Christian</div>
+                                                <div className="text">{onloadData.Religion}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Marital status</div>
-                                                <div className="text">Married</div>
+                                                <div className="text">{onloadData.MaritalStatus == "1" ? "Single" : "Married"}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Employment of spouse</div>
-                                                <div className="text">No</div>
+                                                <div className="text">{onloadData.spouse}</div>
                                             </li>
                                             <li>
                                                 <div className="title">No. of children</div>
-                                                <div className="text">2</div>
+                                                <div className="text">{onloadData.children}</div>
                                             </li>
                                         </ul>
                                     </div>
@@ -212,22 +302,20 @@ const ViewEployee = () => {
                             <div className="col-md-6 d-flex">
                                 <div className="card profile-box flex-fill">
                                     <div className="card-body">
-                                        <h3 className="card-title">Emergency Contact <a href="#" className="edit-icon"
-                                            data-bs-toggle="modal" data-bs-target="#emergency_contact_modal"><i
-                                                className="fa fa-pencil"></i></a></h3>
+                                        <h3 className="card-title">Emergency Contact <a href="#" className="edit-icon" onClick={()=>setShowContact(true)}><i className="la la-pencil"></i></a></h3>
                                         <h5 className="section-title">Primary</h5>
                                         <ul className="personal-info">
                                             <li>
                                                 <div className="title">Name</div>
-                                                <div className="text">John Doe</div>
+                                                <div className="text">{onloadData.PrimaryName}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Relationship</div>
-                                                <div className="text">Father</div>
+                                                <div className="text">{onloadData.PrimaryRelationship}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Phone </div>
-                                                <div className="text">9876543210, 9876543210</div>
+                                                <div className="text">{onloadData.PrimaryPhone}</div>
                                             </li>
                                         </ul>
                                         <hr />
@@ -235,15 +323,15 @@ const ViewEployee = () => {
                                         <ul className="personal-info">
                                             <li>
                                                 <div className="title">Name</div>
-                                                <div className="text">Karen Wills</div>
+                                                <div className="text">{onloadData.SecondaryName}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Relationship</div>
-                                                <div className="text">Brother</div>
+                                                <div className="text">{onloadData.SecondaryRelationship}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Phone </div>
-                                                <div className="text">9876543210, 9876543210</div>
+                                                <div className="text">{onloadData.SecondaryPhone}</div>
                                             </li>
                                         </ul>
                                     </div>
@@ -254,23 +342,23 @@ const ViewEployee = () => {
                             <div className="col-md-6 d-flex">
                                 <div className="card profile-box flex-fill">
                                     <div className="card-body">
-                                        <h3 className="card-title">Bank information</h3>
+                                        <h3 className="card-title">Bank information <a href="#" className="edit-icon" onClick={()=>setShowBank(true)}><i className="la la-pencil"></i></a></h3>
                                         <ul className="personal-info">
                                             <li>
                                                 <div className="title">Bank name</div>
-                                                <div className="text">ICICI Bank</div>
+                                                <div className="text">{onloadData.Bankname}</div>
                                             </li>
                                             <li>
                                                 <div className="title">Bank account No.</div>
-                                                <div className="text">159843014641</div>
+                                                <div className="text">{onloadData.BankaccountNo}</div>
                                             </li>
                                             <li>
                                                 <div className="title">IFSC Code</div>
-                                                <div className="text">ICI24504</div>
+                                                <div className="text">{onloadData.IFSCCode}</div>
                                             </li>
                                             <li>
                                                 <div className="title">PAN No</div>
-                                                <div className="text">TC000Y56</div>
+                                                <div className="text">{onloadData.PANNo}</div>
                                             </li>
                                         </ul>
                                     </div>
@@ -279,8 +367,7 @@ const ViewEployee = () => {
                             <div className="col-md-6 d-flex">
                                 <div className="card profile-box flex-fill">
                                     <div className="card-body">
-                                        <h3 className="card-title">Family Informations <a href="#" className="edit-icon"
-                                            data-bs-toggle="modal" data-bs-target="#family_info_modal"><i
+                                        <h3 className="card-title">Family Informations <a href="#" className="edit-icon" onClick={()=>setShowFamily(true)} ><i
                                                 className="fa fa-pencil"></i></a></h3>
                                         <div className="table-responsive">
                                             <table className="table table-nowrap">
@@ -941,6 +1028,54 @@ const ViewEployee = () => {
                     </div>
                     <div className="modal-body">
                         <EditProfileInfo saveLeaveType={(data)=>saveLeaveType(data)} onloadDetails={onloadData} />
+                    </div>
+                </Modal>
+
+                <Modal show={showPersonal} onHide={handleClosePersonal} size="lg">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Profile Information</h5>
+                        <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={() => handleClosePersonal()}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <EditProfileNation saveProfileNation={(data)=>saveProfileNation1(data)} onloadDetails={onloadData} />
+                    </div>
+                </Modal>
+
+                <Modal show={showContact} onHide={handleCloseContact} size="lg">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Profile Information</h5>
+                        <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={() => handleCloseContact()}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <EditProfileContact saveProfileContact={(data)=>saveProfileContact(data)} onloadDetails={onloadData} />
+                    </div>
+                </Modal>
+
+                <Modal show={showBank} onHide={handleCloseBank} size="lg">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Bank Information</h5>
+                        <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={() => handleCloseBank()}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <EditProfileBank saveProfileBank={(data)=>saveProfileBank(data)} onloadDetails={onloadData} />
+                    </div>
+                </Modal>
+
+                <Modal show={showFamily} onHide={handleCloseFamily} size="lg">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Family Informations</h5>
+                        <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={() => handleCloseFamily()}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <EditProfileFamily saveProfileFamily={(data)=>saveProfileFamily(data)} onloadDetails={onloadData} />
                     </div>
                 </Modal>
             </>
